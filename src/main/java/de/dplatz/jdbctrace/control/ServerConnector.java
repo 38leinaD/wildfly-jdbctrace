@@ -1,32 +1,39 @@
 package de.dplatz.jdbctrace.control;
 
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
+import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 
 import de.dplatz.jdbctrace.entity.Datasource;
 
+
+@Singleton
+@ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
 public class ServerConnector {
 
     MBeanServerConnection connection;
 
     public ServerConnector() {
-
+    	connection = ManagementFactory.getPlatformMBeanServer();
     }
 
     public void connect() throws Exception {
-        String urlString = System.getProperty("jmx.service.url", "service:jmx:remote+http://localhost:9990");
+        /*String urlString = System.getProperty("jmx.service.url", "service:jmx:remote+http://localhost:9990");
         JMXServiceURL serviceURL = new JMXServiceURL(urlString);
         JMXConnector jmxConnector = JMXConnectorFactory.connect(serviceURL, null);
-        connection = jmxConnector.getMBeanServerConnection();
+        connection = jmxConnector.getMBeanServerConnection();*/
+    	
+    	//connection = ManagementFactory.getPlatformMBeanServer();
     }
 
     public List<Datasource> getDatasources() {

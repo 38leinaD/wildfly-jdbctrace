@@ -9,9 +9,9 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    flatDir {
+    /*flatDir {
 		dirs '/home/daniel/dev/app-servers/jboss-eap-7.1/bin/client'
-	}
+	}*/
     jcenter()
 }
 
@@ -22,7 +22,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.10.0'
 
-    compile name: 'jboss-cli-client'
+    //compile name: 'jboss-cli-client'
 }
 
 war {
