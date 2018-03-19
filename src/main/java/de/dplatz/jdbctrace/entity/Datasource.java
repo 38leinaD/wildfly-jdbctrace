@@ -1,22 +1,13 @@
 package de.dplatz.jdbctrace.entity;
 
-import java.io.IOException;
-
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
+import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectInstance;
-import javax.management.ReflectionException;
 
-/**
- * Datasource
- */
 public class Datasource {
 
-    MBeanServerConnection connection;
     ObjectInstance object;
-
+    MBeanServerConnection connection;
     public Datasource(ObjectInstance object, MBeanServerConnection connection) {
         this.object = object;
         this.connection = connection;
@@ -25,15 +16,22 @@ public class Datasource {
     public String getName() {
         return object.getObjectName().getCanonicalName();
     }
-
-    public boolean getSpy() {
-        try {
+    
+    public boolean isSpyingEnabled() {
+    	try {
             Object obj = connection.getAttribute(object.getObjectName(), "spy");
-            System.out.println(obj);
-            return false;
+            return (Boolean)obj;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
+    }
+    
+    public void setSpyingEnabled(boolean value) {
+    	try {
+			connection.setAttribute(object.getObjectName(), new Attribute("spy", true));
+			
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
     }
 }

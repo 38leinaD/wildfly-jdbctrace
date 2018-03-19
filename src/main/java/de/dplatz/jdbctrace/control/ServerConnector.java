@@ -9,6 +9,7 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Singleton;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Produces;
 import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectInstance;
@@ -21,10 +22,9 @@ import de.dplatz.jdbctrace.entity.Datasource;
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
 public class ServerConnector {
 
-    MBeanServerConnection connection;
-
+    boolean restartRequired = false;
+    
     public ServerConnector() {
-    	connection = ManagementFactory.getPlatformMBeanServer();
     }
 
     public void connect() throws Exception {
@@ -36,28 +36,26 @@ public class ServerConnector {
     	//connection = ManagementFactory.getPlatformMBeanServer();
     }
 
-    public List<Datasource> getDatasources() {
-        if (connection == null) throw new IllegalStateException("No open MBeanServerConnection.");
-        //ObjectName mBeanName = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
-        try {
-            ObjectName datasourceMBean = new ObjectName("jboss.as:subsystem=datasources,xa-data-source=*");
-            Set<ObjectInstance> ds = connection.queryMBeans(datasourceMBean, null);
 
-            List<Datasource> datasources = new ArrayList<>();
-
-            ds.forEach(o -> datasources.add(new Datasource(o, connection)));
-
-            return datasources;
-            
-        } catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+    
+    public boolean isRestartRequired() {
+    	return this.restartRequired;
     }
-
+    
+    public void setRestartRequired() {
+    	this.restartRequired = true;
+    }
+    
+    @Produces
+    public MBeanServerConnection getConnection() {
+    	return ManagementFactory.getPlatformMBeanServer();
+    }
+       
+/*
     public void traceJDBC(boolean enabled) throws Exception {
         ObjectName mBeanName = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
         Object attrVal = connection.getAttribute(mBeanName, "level");
         System.out.println("Value via JMX: " + attrVal);
         connection.setAttribute(mBeanName, new Attribute("level", "OFF"));
-    }
+    }*/
 }

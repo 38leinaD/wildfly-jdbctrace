@@ -1,20 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html">
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
 <!--    xmlns:p="http://primefaces.org/ui" -->
 
 <h:head>
-	<title>hello world</title>
+	<title>jdbctrace configuration</title>
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+		crossorigin="anonymous"></link>
 </h:head>
 <h:body>
+<div class="container">
+
+<h:messages/>
+	<div jsf:id="message" class="alert alert-danger" rendered="#{index.connector.restartRequired}" role="alert">To apply your changes, a restart of the application-server is required.</div>
+
 	<h:form>
 
 
-		<h:outputText value="1. Please select for which "></h:outputText>
+		<p class="alert alert-warning" >To enable spying on the JDBC-traffic of a datasource, select a datasource below.
+		Note that enabling this for a datasource will require the restart of the server and will impact the performance negatively.
+		</p>
+		
 		<h:dataTable value="#{index.datasources}" var="datasource"
-			styleClass="employeeTable" headerClass="employeeTableHeader"
+			styleClass="table" headerClass="employeeTableHeader"
 			rowClasses="employeeTableOddRow,employeeTableEvenRow">
 
 			<h:column>
@@ -23,19 +35,21 @@
    			</h:column>
 
 			<h:column>
-				<f:facet name="header">Spy</f:facet>
+				<f:facet name="header">Spying Enabled</f:facet>
 
-				<h:selectBooleanCheckbox value="#{datasource.spy}" />
+				<h:selectBooleanCheckbox value="#{datasource.spyingEnabled}" valueChangeListener="#{index.spyingEnabledChanged}" onclick="submit()"/>
 			</h:column>
 
 		</h:dataTable>
+		
+		<hr/>
 
 		<h:commandButton action="#{index.clicked()}" value="Save" />
 
 	</h:form>
 
 
-
+</div>
 </h:body>
 
 </html>
