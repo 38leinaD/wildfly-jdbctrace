@@ -20,11 +20,11 @@ import de.dplatz.jdbctrace.entity.Datasource;
 
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
-public class ServerConnector {
+public class JmxManager {
 
     boolean restartRequired = false;
     
-    public ServerConnector() {
+    public JmxManager() {
     }
 
     public void connect() throws Exception {

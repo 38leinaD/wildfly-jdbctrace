@@ -16,18 +16,20 @@
 <div class="container">
 
 <h:messages/>
-	<div jsf:id="message" class="alert alert-danger" rendered="#{index.connector.restartRequired}" role="alert">To apply your changes, a restart of the application-server is required.</div>
+	<div jsf:id="message" class="alert alert-danger" rendered="#{index.connector.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
 
-	<h:form>
-
+	<h:form action="#{index.save}">
+	<nav class="nav nav-tabs">
+	  <a class="nav-link active" href="#">Config</a>
+	  <a class="nav-link" href="#">JDBC Trace</a>
+	</nav>
 
 		<p class="alert alert-warning" >To enable spying on the JDBC-traffic of a datasource, select a datasource below.
 		Note that enabling this for a datasource will require the restart of the server and will impact the performance negatively.
 		</p>
 		
 		<h:dataTable value="#{index.datasources}" var="datasource"
-			styleClass="table" headerClass="employeeTableHeader"
-			rowClasses="employeeTableOddRow,employeeTableEvenRow">
+			styleClass="table">
 
 			<h:column>
 				<f:facet name="header">Datsource</f:facet>    				
@@ -37,17 +39,14 @@
 			<h:column>
 				<f:facet name="header">Spying Enabled</f:facet>
 
-				<h:selectBooleanCheckbox value="#{datasource.spyingEnabled}" valueChangeListener="#{index.spyingEnabledChanged}" onclick="submit()"/>
+				<h:selectBooleanCheckbox value="#{datasource.spyingEnabled}">
+					 <f:ajax listener="#{index.save}" render="@all" />
+				</h:selectBooleanCheckbox>
 			</h:column>
 
 		</h:dataTable>
-		
-		<hr/>
-
-		<h:commandButton action="#{index.clicked()}" value="Save" />
 
 	</h:form>
-
 
 </div>
 </h:body>

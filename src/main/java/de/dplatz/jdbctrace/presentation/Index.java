@@ -3,13 +3,15 @@ package de.dplatz.jdbctrace.presentation;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
-import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import de.dplatz.jdbctrace.control.ServerConnector;
+import de.dplatz.jdbctrace.control.DatasourcesJmxManager;
+import de.dplatz.jdbctrace.control.LoggingJmxManager;
+import de.dplatz.jdbctrace.control.JmxManager;
 import de.dplatz.jdbctrace.entity.Datasource;
-import de.dplatz.jdbctrace.entity.Datasources;
 
 @Model
 public class Index implements Serializable {
@@ -17,28 +19,41 @@ public class Index implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	Datasources datasources;
+	DatasourcesJmxManager datasourceDao;
 	
 	@Inject
-	ServerConnector connector;
+	JmxManager connector;
 	
-	public Object clicked() {
-		
-		System.out.println("HELLO!!!");
-		return null;
-	}
+	@Inject
+	LoggingJmxManager logging;
+	
+	List<Datasource> datasources;
 	
 	public List<Datasource> getDatasources() {
-		return datasources.getAll();
+		if (datasources == null) {
+			datasources = datasourceDao.findAll();
+		}
+		return datasources;
 	}
 	
-	public ServerConnector getConnector() {
+	public JmxManager getConnector() {
 		return connector;
 	}
 	
-	public void spyingEnabledChanged(ValueChangeEvent event) {
-		//connector.setRestartRequired();
-		System.out.println("XXX" + event.getNewValue());
-		connector.setRestartRequired();
+	public String save() {
+		if (datasources == null) return null;
+		datasources.forEach(ds -> datasourceDao.persist(ds));
+		if (datasources.stream()
+			.filter(ds -> ds.isSpyingEnabled())
+			.findAny()
+			.isPresent()) {
+			logging.setTrace(true);
+		}
+		else {
+			logging.setTrace(false);
+		}
+		
+		datasources = null;
+		return null;
 	}
 }

@@ -12,7 +12,7 @@ public class ServerConnectorTest {
     public void queryDatasources() throws Exception {
         System.out.println("Starting lookup ...");
 
-        ServerConnector connector = new ServerConnector();
+        JmxManager connector = new JmxManager();
         connector.connect();
 
         List<Datasource> datasources = connector.getDatasources();

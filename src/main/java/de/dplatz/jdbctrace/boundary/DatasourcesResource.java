@@ -1,23 +1,21 @@
 package de.dplatz.jdbctrace.boundary;
 
-import java.util.List;
-
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import de.dplatz.jdbctrace.control.ServerConnector;
-import de.dplatz.jdbctrace.entity.Datasource;
+import de.dplatz.jdbctrace.control.LoggingJmxManager;
 
 @Path("datasources")
 public class DatasourcesResource {
 
+	@Inject
+	LoggingJmxManager logging;
 	
 	@GET
 	public String getDS() throws Exception {
-		ServerConnector s = new ServerConnector();
-		s.connect();
-		List<Datasource> datasources = s.getDatasources();
-		
-		return datasources.get(0).getName().toString() + System.currentTimeMillis();
+		//logging.findAll();
+		// 2018-03-19 21:51:48,075 DEBUG [jboss.jdbc.spy] (Periodic Recovery) java:/PCE_REPORTING_TX_DATASOURCE [Connection] close()
+		return System.currentTimeMillis() + "";
 	}
 }
