@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
+import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -43,6 +46,8 @@ public class Index implements Serializable {
 	public String save() {
 		if (datasources == null) return null;
 		datasources.forEach(ds -> datasourceDao.persist(ds));
+
+		try {
 		if (datasources.stream()
 			.filter(ds -> ds.isSpyingEnabled())
 			.findAny()
@@ -51,6 +56,9 @@ public class Index implements Serializable {
 		}
 		else {
 			logging.setTrace(false);
+		}
+		} catch(Exception e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error while enabling tracing", e.getLocalizedMessage()));
 		}
 		
 		datasources = null;

@@ -15,7 +15,7 @@
 <h:body>
 <div class="container">
 
-<h:messages/>
+	<h:messages class="alert alert-danger"/>
 	<div jsf:id="message" class="alert alert-danger" rendered="#{index.connector.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
 
 	<h:form action="#{index.save}">

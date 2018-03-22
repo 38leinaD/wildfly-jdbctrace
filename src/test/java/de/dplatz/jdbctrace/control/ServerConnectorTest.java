@@ -15,11 +15,11 @@ public class ServerConnectorTest {
         JmxManager connector = new JmxManager();
         connector.connect();
 
-        List<Datasource> datasources = connector.getDatasources();
+        /*List<Datasource> datasources = connector.ge;
 
         datasources.forEach(ds -> {
-            System.out.println(ds.getName() + ": " + ds.getSpy());
-        });
+            System.out.println(ds.getName() + ": " + ds.getName());
+        });*/
     }
 
 }
