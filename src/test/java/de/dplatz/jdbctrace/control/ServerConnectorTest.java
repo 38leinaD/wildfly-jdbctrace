@@ -1,10 +1,6 @@
 package de.dplatz.jdbctrace.control;
 
-import java.util.List;
-
 import org.junit.Test;
-
-import de.dplatz.jdbctrace.entity.Datasource;
 
 public class ServerConnectorTest {
 

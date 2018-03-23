@@ -46,13 +46,19 @@ public class LoggingJmxManager {
     public void setTrace(boolean on) throws Exception {
         //findSpyLogger().orElse(this::createSpyLogger)
         if (!findSpyLogger().isPresent()) {
-            System.out.println("CREATE");
             this.createSpyLogger();
         }
         ObjectName spy = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
         AttributeList attrs = new AttributeList();
         attrs.add(new Attribute("level", on ? "TRACE" : "OFF"));
         connection.setAttributes(spy, attrs);
+    }
+
+
+    public boolean isTrace() throws Exception {
+        ObjectName spy = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
+        String level = (String) connection.getAttribute(spy, "level");
+        return level.equals("TRACE");
     }
 
 }

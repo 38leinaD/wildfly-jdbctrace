@@ -1,21 +1,12 @@
 package de.dplatz.jdbctrace.control;
 
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Singleton;
-import javax.ejb.Stateless;
 import javax.enterprise.inject.Produces;
-import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
-
-import de.dplatz.jdbctrace.entity.Datasource;
 
 
 @Singleton

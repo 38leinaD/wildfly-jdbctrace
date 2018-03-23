@@ -3,17 +3,14 @@ package de.dplatz.jdbctrace.presentation;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import de.dplatz.jdbctrace.control.DatasourcesJmxManager;
-import de.dplatz.jdbctrace.control.LoggingJmxManager;
 import de.dplatz.jdbctrace.control.JmxManager;
+import de.dplatz.jdbctrace.control.LoggingJmxManager;
 import de.dplatz.jdbctrace.entity.Datasource;
 
 @Model
@@ -52,10 +49,10 @@ public class Index implements Serializable {
 			.filter(ds -> ds.isSpyingEnabled())
 			.findAny()
 			.isPresent()) {
-			logging.setTrace(true);
+			//logging.setTrace(true);
 		}
 		else {
-			logging.setTrace(false);
+			//logging.setTrace(false);
 		}
 		} catch(Exception e) {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error while enabling tracing", e.getLocalizedMessage()));

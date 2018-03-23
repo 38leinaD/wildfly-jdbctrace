@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+<!--    xmlns:p="http://primefaces.org/ui" -->
+
+<h:head>
+    <title>jdbctrace configuration</title>
+    <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous"></link>
+</h:head>
+<h:body>
+<div class="container">
+
+    <h:messages class="alert alert-danger"/>
+    <div jsf:id="message" class="alert alert-danger" rendered="#{index.connector.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
+
+    <h:form action="#{index.save}">
+    <nav class="nav nav-tabs">
+      <a class="nav-link active" href="index.xhtml">Config</a>
+      <a class="nav-link" href="trace.xhtml">JDBC Trace</a>
+    </nav>
+
+    <button jsf:id="toggle" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" action="#{trace.toggleTrace}">
+        Single toggle
+      </button>
+        
+        <h:dataTable value="#{trace.entries}" var="entry" styleClass="table">
+
+            <h:column>
+                <f:facet name="header">Entries</f:facet>    				
+                  #{entry.query}
+            </h:column>
+
+        </h:dataTable>
+
+    </h:form>
+
+</div>
+</h:body>
+
+</html>
