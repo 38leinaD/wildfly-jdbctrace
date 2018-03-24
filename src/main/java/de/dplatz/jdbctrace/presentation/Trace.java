@@ -1,8 +1,10 @@
 package de.dplatz.jdbctrace.presentation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 
@@ -21,17 +23,31 @@ public class Trace implements Serializable {
 	@Inject
     LoggingJmxManager logging;
     
+
+    List<JDBCEvent> events = new ArrayList<>();
+
 	public List<JDBCEvent> getEntries() {
-		return null;
+		return events;
 	}
     
-    public Object toggleTrace() {
+    public String toggleTrace() {
         System.out.println("TOGGLE");
         try {
         logging.setTrace(!logging.isTrace());
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @Inject
+    Event<JDBCEvent> event;
+
+    public String generateEvent() {
+        System.out.println("event");
+       
+        event.fire(new JDBCEvent("BLA"));
+
         return null;
     }
 }

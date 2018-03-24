@@ -29,3 +29,9 @@ dependencies {
 war {
 	archiveName 'jdbctrace.war'
 }
+
+task deploy(type: Copy, dependsOn: 'war') {
+    dependsOn 'build'
+    from war.archivePath
+    into "${System.env.JBOSS_HOME}/standalone/deployments"
+}

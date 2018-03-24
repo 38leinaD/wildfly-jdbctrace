@@ -6,12 +6,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import de.dplatz.jdbctrace.control.EventQueue;
 import de.dplatz.jdbctrace.entity.JDBCEvent;
 
 /**
@@ -20,11 +22,8 @@ import de.dplatz.jdbctrace.entity.JDBCEvent;
 @WebServlet("/events")
 public class Events extends HttpServlet {
 
-    BlockingQueue<JDBCEvent> queue = new LinkedBlockingDeque<>(50);
-
-    public void onJDBCEvent(@Observes JDBCEvent event) {
-        queue.add(event);
-    }
+    @Inject
+    EventQueue queue;
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/event-stream");
@@ -33,7 +32,9 @@ public class Events extends HttpServlet {
         int i=0;
         //while (true) {
             try (PrintWriter pw = resp.getWriter()){
-                JDBCEvent event = queue.take();
+                System.out.println("wait");
+                JDBCEvent event = queue.getQueue().take();
+                System.out.println("taken");
                 pw.print("data: " + event.getQuery()+"\r\n");
                 resp.flushBuffer();
                 Thread.sleep(500);

@@ -3,7 +3,6 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
-<!--    xmlns:p="http://primefaces.org/ui" -->
 
 <h:head>
     <title>jdbctrace configuration</title>
@@ -18,28 +17,52 @@
     <h:messages class="alert alert-danger"/>
     <div jsf:id="message" class="alert alert-danger" rendered="#{index.connector.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
 
-    <h:form action="#{index.save}">
-    <nav class="nav nav-tabs">
-      <a class="nav-link active" href="index.xhtml">Config</a>
-      <a class="nav-link" href="trace.xhtml">JDBC Trace</a>
-    </nav>
 
-    <button jsf:id="toggle" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" action="#{trace.toggleTrace}">
-        Single toggle
-      </button>
-        
-        <h:dataTable value="#{trace.entries}" var="entry" styleClass="table">
+    <nav class="nav nav-tabs">
+            <a class="nav-link" href="index.xhtml">Config</a>
+            <a class="nav-link active" href="trace.xhtml">JDBC Trace</a>
+          </nav>
+    <h:form id="form1">
+
+
+
+      <h:commandButton value="event" action="#{trace.generateEvent}">
+            <f:ajax execute="@form" render="@none" />
+      </h:commandButton>
+<!--
+        <h:dataTable id="datatable" value="#{trace.entries}" var="entry" styleClass="table">
 
             <h:column>
                 <f:facet name="header">Entries</f:facet>    				
                   #{entry.query}
             </h:column>
 
-        </h:dataTable>
+        </h:dataTable-->
 
     </h:form>
 
+    <table id="table">
+        <thead>
+        
+        </thead>
+        <tbody>
+    
+        </tbody>
+    </table>
+
 </div>
+<script>
+console.log("RELOAD")
+    var eventSource = new EventSource("events");
+    eventSource.onopen = e => console.log(e);
+    eventSource.onmessage = e => {
+        console.log(">>"+e.data);
+        const table = document.querySelector("table");
+        const row = table.insertRow(-1);
+        const column = row.insertCell(1);
+        column.innerText = e.data;
+    };
+    </script>
 </h:body>
 
 </html>
