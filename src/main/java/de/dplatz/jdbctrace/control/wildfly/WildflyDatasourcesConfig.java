@@ -1,36 +1,38 @@
-package de.dplatz.jdbctrace.control;
+package de.dplatz.jdbctrace.control.wildfly;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import de.dplatz.jdbctrace.entity.Datasource;
+import de.dplatz.jdbctrace.entity.JDBCDatasource;
+import de.dplatz.jdbctrace.entity.RestartRequired;
 
 @Stateless
-public class DatasourcesJmxManager {
+class WildflyDatasourcesConfig {
 	
 	@Inject
 	MBeanServerConnection connection;
 		
     @Inject
-    JmxManager connector;
-	
-    public List<Datasource> findAll() {
+    Event<RestartRequired> restartEvent;
+    
+    public List<JDBCDatasource> findAll() {
         //ObjectName mBeanName = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
         try {
             ObjectName datasourceMBean = new ObjectName("jboss.as:subsystem=datasources,xa-data-source=*");
             Set<ObjectInstance> ds = connection.queryMBeans(datasourceMBean, null);
 
-            List<Datasource> datasources = new ArrayList<>();
+            List<JDBCDatasource> datasources = new ArrayList<>();
 
-            ds.forEach(o -> datasources.add(new Datasource(o, (Boolean)getAttribute(o, "spy"))));
+            ds.forEach(o -> datasources.add(new JDBCDatasource(o, (Boolean)getAttribute(o, "spy"))));
 
             return datasources;
             
@@ -57,12 +59,10 @@ public class DatasourcesJmxManager {
 		}
     }
     
-    public void persist(Datasource ds) {
+    public void persist(JDBCDatasource ds) {
     	if (!ds.isValid()) {
     		setAttribute(ds.getObject(), "spy", ds.isSpyingEnabled());
-    		connector.setRestartRequired();
+    	    restartEvent.fire(new RestartRequired());
     	}
     }
-
-    
 }

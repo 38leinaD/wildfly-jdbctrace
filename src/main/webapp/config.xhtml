@@ -16,19 +16,19 @@
 <div class="container">
 
 	<h:messages class="alert alert-danger"/>
-	<div jsf:id="message" class="alert alert-danger" rendered="#{index.connector.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
+	<div jsf:id="message" class="alert alert-danger" rendered="#{configBean.connector.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
 
-	<h:form action="#{index.save}">
+	<h:form action="#{configBean.save}">
 	<nav class="nav nav-tabs">
-		<a class="nav-link active" href="index.xhtml">Config</a>
-		<a class="nav-link" href="trace.xhtml">JDBC Trace</a>
+		<a class="nav-link active" href="config.xhtml">Config</a>
+		<a class="nav-link" href="traces.xhtml">JDBC Trace</a>
 	</nav>
 
 		<p class="alert alert-warning" >To enable spying on the JDBC-traffic of a datasource, select a datasource below.
 		Note that enabling this for a datasource will require the restart of the server and will impact the performance negatively.
 		</p>
 		
-		<h:dataTable value="#{index.datasources}" var="datasource"
+		<h:dataTable value="#{configBean.datasources}" var="datasource"
 			styleClass="table">
 
 			<h:column>
@@ -40,7 +40,7 @@
 				<f:facet name="header">Spying Enabled</f:facet>
 
 				<h:selectBooleanCheckbox value="#{datasource.spyingEnabled}">
-					 <f:ajax listener="#{index.save}" render="@all" />
+					 <f:ajax listener="#{configBean.save}" render="@all" />
 				</h:selectBooleanCheckbox>
 			</h:column>
 

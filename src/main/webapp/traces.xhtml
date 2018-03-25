@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+<h:head>
+	<title>jdbctrace configuration</title>
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+		crossorigin="anonymous"></link>
+</h:head>
+<h:body>
+	<div class="container">
+
+		<h:messages class="alert alert-danger" />
+		<div jsf:id="message" class="alert alert-danger"
+			rendered="#{configBean.connector.restartRequired}" role="alert">To
+			apply your changes, a restart of the server is required.</div>
+
+
+		<nav class="nav nav-tabs"> <a class="nav-link"
+			href="config.xhtml">Config</a> <a class="nav-link active"
+			href="traces.xhtml">Trace</a> </nav>
+		<h:form id="form1">
+
+			<h:commandButton value="Event" class="btn btn-primary"
+				action="#{tracesBean.generateEvent}">
+			</h:commandButton>
+
+			<h:commandButton value="Start recording"
+				class="btn btn-outline-danger"
+				rendered="#{not tracesBean.recorder.recording}"
+				action="#{tracesBean.recorder.record()}">
+			</h:commandButton>
+
+			<h:commandButton value="Stop recording" class="btn btn-danger"
+				rendered="#{tracesBean.recorder.recording}"
+				action="#{tracesBean.recorder.stop()}">
+			</h:commandButton>
+
+			<h:dataTable id="datatable"
+				value="#{tracesBean.recorder.recordedStatements}" var="entry"
+				styleClass="table">
+
+				<h:column>
+					<f:facet name="header">Entries</f:facet>    				
+                  	#{entry.query}
+            	</h:column>
+
+			</h:dataTable>
+
+		</h:form>
+
+	</div>
+	<script>
+
+    </script>
+</h:body>
+
+</html>

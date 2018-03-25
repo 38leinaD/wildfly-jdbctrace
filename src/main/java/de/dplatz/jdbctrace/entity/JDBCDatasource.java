@@ -2,13 +2,13 @@ package de.dplatz.jdbctrace.entity;
 
 import javax.management.ObjectInstance;
 
-public class Datasource {
+public class JDBCDatasource {
 
     ObjectInstance object;
     boolean spyingEnabled;
     boolean valid;
 
-    public Datasource(ObjectInstance object, boolean spyingEnabled) {
+    public JDBCDatasource(ObjectInstance object, boolean spyingEnabled) {
         this.object = object;
         this.spyingEnabled = spyingEnabled;
         this.valid = true;

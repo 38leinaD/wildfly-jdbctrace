@@ -1,9 +1,10 @@
-package de.dplatz.jdbctrace.control;
+package de.dplatz.jdbctrace.control.wildfly;
 
 import java.util.Optional;
 import java.util.Set;
 
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -12,15 +13,17 @@ import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
+import de.dplatz.jdbctrace.entity.RestartRequired;
+
 @Stateless
-public class LoggingJmxManager {
+class WildflyLoggingConfig {
 
     @Inject
     MBeanServerConnection connection;
 
     @Inject
-    JmxManager connector;
-
+    Event<RestartRequired> restartEvent;
+    
     public Optional<ObjectInstance> findSpyLogger() throws Exception {
         //ObjectName mBeanName = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
 
@@ -43,7 +46,7 @@ public class LoggingJmxManager {
 
     }
 
-    public void setTrace(boolean on) throws Exception {
+    void setTrace(boolean on) throws Exception {
         //findSpyLogger().orElse(this::createSpyLogger)
         if (!findSpyLogger().isPresent()) {
             this.createSpyLogger();
@@ -60,5 +63,6 @@ public class LoggingJmxManager {
         String level = (String) connection.getAttribute(spy, "level");
         return level.equals("TRACE");
     }
+    
 
 }
