@@ -1,36 +1,24 @@
 package de.dplatz.jdbctrace.control.wildfly;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.util.TypeLiteral;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.CoreMatchers.anything;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-
-import static org.junit.Assert.assertThat;
-
-import static org.mockito.Mockito.mock;
 
 import de.dplatz.jdbctrace.entity.JDBCStatement;
 
@@ -65,27 +53,7 @@ public class WildflySupportIT {
 
 	@Test(timeout = 5000)
 	public void test() throws InterruptedException {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				System.out.println("++++");
-				try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile))) {
-					for (int i = 0; i < jdbcTraceData.length; i++) {
-						writer.append(jdbcTraceData[i] + "\n");
-						writer.flush();
-						TimeUnit.MILLISECONDS.sleep(50);
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					System.out.println("DDDDDONE");
-					latch.countDown();
-				}
-			}
-		}).start();
-
+		
 		WildflySupport support = new WildflySupport();
 		WildflyLogParser logParser = new WildflyLogParser();
 		Event<JDBCStatement> event = new Event<JDBCStatement>() {
@@ -93,7 +61,6 @@ public class WildflySupportIT {
 			@Override
 			public void fire(JDBCStatement event) {
 				capturedEvent = event;
-				System.out.println("HELLO");
 				latch.countDown();
 			}
 
@@ -119,16 +86,33 @@ public class WildflySupportIT {
 
 		logParser.event = event;
 		support.logParser = logParser;
-		support.executor = null;
 		support.serverLog = logFile;
-		support.executor = Executors.newFixedThreadPool(1);
+		support.executor = ManagedExecutorServiceFake.create();
 		support.init();
-		System.out.println("BEFORE");
+
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile))) {
+					for (int i = 0; i < jdbcTraceData.length; i++) {
+						writer.append(jdbcTraceData[i] + "\n");
+						writer.flush();
+						TimeUnit.MILLISECONDS.sleep(100);
+
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					latch.countDown();
+				}
+			}
+		}).start();
+
 		latch.await();
-		System.out.println("AFTER");
-		// verify(event).fire(any(JDBCStatement.class));
 		assertThat(capturedEvent, is(notNullValue()));
-		// assertTrue(statement.getStatement().startsWith("UPDATE LEASE SET VALIDTO"));
+		//System.out.println(capturedEvent.resolvedStatement());
 	}
 
 }

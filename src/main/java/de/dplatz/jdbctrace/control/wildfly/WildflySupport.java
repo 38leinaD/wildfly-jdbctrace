@@ -3,10 +3,10 @@ package de.dplatz.jdbctrace.control.wildfly;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Resource;
 import javax.ejb.Singleton;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.management.MBeanServerConnection;
@@ -41,20 +41,16 @@ public class WildflySupport {
     WildflyLogParser logParser;
 
     @Resource
-    ExecutorService executor;
+    ManagedExecutorService executor;
 
-    File serverLog;
+    File serverLog = new File(System.getProperty("jboss.server.log.dir") + "/server.log");
     Tailer tail;
 
     public void init() {
-        String logPath = System.getProperty("jboss.server.log.dir") + "/server.log";
-        serverLog = new File(logPath);
-        System.out.println("++ Reading " + logPath);
-
+        System.out.println("++ Reading " + serverLog.getAbsolutePath());
         tail = new Tailer(serverLog, new TailerListenerAdapter() {
             @Override
             public void handle(String line) {
-            	System.out.println("HE");
                 logParser.handleLine(line);
             }
         }, 100, true);
