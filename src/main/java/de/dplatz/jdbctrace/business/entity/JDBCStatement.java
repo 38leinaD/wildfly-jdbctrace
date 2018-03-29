@@ -1,14 +1,9 @@
-package de.dplatz.jdbctrace.entity;
+package de.dplatz.jdbctrace.business.entity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-/**
- * JDBCEvent
- */
 public class JDBCStatement {
 
 	String timestamp;

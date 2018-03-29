@@ -6,9 +6,9 @@ import java.util.List;
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 
-import de.dplatz.jdbctrace.control.ApplicationInitializer;
-import de.dplatz.jdbctrace.control.wildfly.WildflySupport;
-import de.dplatz.jdbctrace.entity.JDBCDatasource;
+import de.dplatz.jdbctrace.business.control.AppServerPlugin;
+import de.dplatz.jdbctrace.business.control.JDBCTraceApplication;
+import de.dplatz.jdbctrace.business.entity.JDBCDatasource;
 
 @Model
 public class ConfigBean implements Serializable {
@@ -16,24 +16,24 @@ public class ConfigBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	ApplicationInitializer initializer;
+	JDBCTraceApplication initializer;
 
 	@Inject
-	WildflySupport serverSupport;
+	AppServerPlugin serverSupport;
 	
 	
 	List<JDBCDatasource> datasources;
 	
 	public List<JDBCDatasource> getDatasources() {
 		if (datasources == null) {
-			datasources = serverSupport.getDatasources();
+			datasources = serverSupport.findAllDatasources();
 		}
 		return datasources;
 	}
 	
 	public String save() {
 		if (datasources == null) return null;
-		datasources.forEach(ds -> serverSupport.update(ds));
+		datasources.forEach(ds -> serverSupport.updateDatasource(ds));
 		boolean anyActive = datasources.stream()
 			.filter(JDBCDatasource::isSpyingEnabled)
 			.findAny()
@@ -45,7 +45,7 @@ public class ConfigBean implements Serializable {
 		return null;
 	}
 
-	public ApplicationInitializer getInitializer() {
+	public JDBCTraceApplication getInitializer() {
 		return initializer;
 	}
 }

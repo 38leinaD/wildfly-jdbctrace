@@ -1,4 +1,4 @@
-package de.dplatz.jdbctrace.entity;
+package de.dplatz.jdbctrace.business.entity;
 
 import javax.management.ObjectInstance;
 
@@ -23,12 +23,11 @@ public class JDBCDatasource {
 	}
 
 	public void setSpyingEnabled(boolean spyingEnabled) {
-		System.out.println("XXXX");
 		this.spyingEnabled = spyingEnabled;
 		this.valid = false;
 	}
 
-	public ObjectInstance getObject() {
+	public ObjectInstance getObjectInstance() {
 		return object;
 	}
 

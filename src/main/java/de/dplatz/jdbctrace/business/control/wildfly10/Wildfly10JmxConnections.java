@@ -1,13 +1,13 @@
-package de.dplatz.jdbctrace.control.wildfly;
+package de.dplatz.jdbctrace.business.control.wildfly10;
 
 import java.lang.management.ManagementFactory;
 
-import javax.ejb.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.management.MBeanServerConnection;
 
-@Singleton
-public class WildflyJmxExposer {
+@ApplicationScoped
+public class Wildfly10JmxConnections {
 
     @Produces
     public MBeanServerConnection getConnection() {

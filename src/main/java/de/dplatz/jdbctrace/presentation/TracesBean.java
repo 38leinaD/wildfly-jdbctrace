@@ -4,14 +4,12 @@ import java.io.Serializable;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
-import javax.faces.component.html.HtmlSelectBooleanCheckbox;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 
-import de.dplatz.jdbctrace.control.ApplicationInitializer;
-import de.dplatz.jdbctrace.control.SQLStatementRecorder;
-import de.dplatz.jdbctrace.entity.JDBCStatement;
+import de.dplatz.jdbctrace.business.control.JDBCStatementRecorder;
+import de.dplatz.jdbctrace.business.control.JDBCTraceApplication;
+import de.dplatz.jdbctrace.business.entity.JDBCStatement;
 
 @Model
 public class TracesBean implements Serializable {
@@ -19,10 +17,10 @@ public class TracesBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	ApplicationInitializer logs;
+	JDBCTraceApplication logs;
     
 	@Inject
-	SQLStatementRecorder recorder;
+	JDBCStatementRecorder recorder;
    
     @Inject
     Event<JDBCStatement> event;
@@ -31,7 +29,7 @@ public class TracesBean implements Serializable {
         recorder.setFilterJunk((boolean) event.getNewValue());
     }
 
-    public SQLStatementRecorder getRecorder() {
+    public JDBCStatementRecorder getRecorder() {
     	return recorder;
     }
 }

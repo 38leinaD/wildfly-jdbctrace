@@ -1,4 +1,4 @@
-package de.dplatz.jdbctrace.control.wildfly;
+package de.dplatz.jdbctrace.business.control.wildfly10;
 
 import java.util.Optional;
 import java.util.Set;
@@ -13,10 +13,11 @@ import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
-import de.dplatz.jdbctrace.entity.RestartRequired;
+import de.dplatz.jdbctrace.business.entity.RestartRequired;
+
 
 @Stateless
-class WildflyLoggingConfig {
+class Wildfly10Logging {
 
     @Inject
     MBeanServerConnection connection;
@@ -25,8 +26,6 @@ class WildflyLoggingConfig {
     Event<RestartRequired> restartEvent;
     
     public Optional<ObjectInstance> findSpyLogger() throws Exception {
-        //ObjectName mBeanName = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
-
         Set<ObjectInstance> spyLogger = connection.queryMBeans(new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy"), null);
 
         return spyLogger.stream().findAny();
@@ -34,9 +33,6 @@ class WildflyLoggingConfig {
     }
 
     public void createSpyLogger() throws Exception {
-        //ObjectName mBeanName = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
-
-
         connection.invoke(new ObjectName("jboss.as:subsystem=logging"), "addLogger",
                 new Object[] { "jboss.jdbc.spy", null, null, null, null, "TRACE", null },
                 new String[] { String.class.getName(), String.class.getName(), CompositeData.class.getName(),
@@ -47,7 +43,6 @@ class WildflyLoggingConfig {
     }
 
     void setTrace(boolean on) throws Exception {
-        //findSpyLogger().orElse(this::createSpyLogger)
         if (!findSpyLogger().isPresent()) {
             this.createSpyLogger();
             restartEvent.fire(new RestartRequired());
@@ -64,6 +59,4 @@ class WildflyLoggingConfig {
         String level = (String) connection.getAttribute(spy, "level");
         return level.equals("TRACE");
     }
-    
-
 }

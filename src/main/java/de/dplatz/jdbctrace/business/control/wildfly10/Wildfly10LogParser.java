@@ -1,4 +1,4 @@
-package de.dplatz.jdbctrace.control.wildfly;
+package de.dplatz.jdbctrace.business.control.wildfly10;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,12 +8,9 @@ import java.util.regex.Pattern;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import de.dplatz.jdbctrace.entity.JDBCStatement;
+import de.dplatz.jdbctrace.business.entity.JDBCStatement;
 
-/**
- * LogExtractor
- */
-public class WildflyLogParser {
+public class Wildfly10LogParser {
 
     Map<String, JDBCStatement> statementsPerThread = new HashMap<>();
 

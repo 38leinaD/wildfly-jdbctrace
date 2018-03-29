@@ -1,10 +1,10 @@
-package de.dplatz.jdbctrace.control.wildfly;
+package de.dplatz.jdbctrace.business.control.wildfly10;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.management.Attribute;
@@ -12,11 +12,11 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import de.dplatz.jdbctrace.entity.JDBCDatasource;
-import de.dplatz.jdbctrace.entity.RestartRequired;
+import de.dplatz.jdbctrace.business.entity.JDBCDatasource;
+import de.dplatz.jdbctrace.business.entity.RestartRequired;
 
-@Stateless
-class WildflyDatasourcesConfig {
+@ApplicationScoped
+class Wildfly10Datasources {
 	
 	@Inject
 	MBeanServerConnection connection;
@@ -25,7 +25,6 @@ class WildflyDatasourcesConfig {
     Event<RestartRequired> restartEvent;
     
     public List<JDBCDatasource> findAll() {
-        //ObjectName mBeanName = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
         try {
             ObjectName datasourceMBean = new ObjectName("jboss.as:subsystem=datasources,xa-data-source=*");
             Set<ObjectInstance> ds = connection.queryMBeans(datasourceMBean, null);
@@ -61,7 +60,7 @@ class WildflyDatasourcesConfig {
     
     public void persist(JDBCDatasource ds) {
     	if (!ds.isValid()) {
-    		setAttribute(ds.getObject(), "spy", ds.isSpyingEnabled());
+    		setAttribute(ds.getObjectInstance(), "spy", ds.isSpyingEnabled());
     	    restartEvent.fire(new RestartRequired());
     	}
     }

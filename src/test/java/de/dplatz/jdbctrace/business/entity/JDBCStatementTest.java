@@ -1,10 +1,12 @@
-package de.dplatz.jdbctrace.entity;
+package de.dplatz.jdbctrace.business.entity;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 
 import static org.junit.Assert.assertThat;
+
+import de.dplatz.jdbctrace.business.entity.JDBCStatement;
 
 public class JDBCStatementTest {
 

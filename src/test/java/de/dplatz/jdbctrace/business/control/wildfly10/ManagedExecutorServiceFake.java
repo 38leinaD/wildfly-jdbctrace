@@ -1,4 +1,4 @@
-package de.dplatz.jdbctrace.control.wildfly;
+package de.dplatz.jdbctrace.business.control.wildfly10;
 
 import java.util.Collection;
 import java.util.List;
