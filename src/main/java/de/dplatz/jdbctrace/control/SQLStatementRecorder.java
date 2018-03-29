@@ -12,16 +12,28 @@ import de.dplatz.jdbctrace.entity.JDBCStatement;
 public class SQLStatementRecorder {
 
     List<JDBCStatement> recordings = new LinkedList<>();
-	private boolean record = false;
+    private boolean record = false;
+    private boolean filterJunk = true;
 
     public void on(@Observes JDBCStatement event) {
-    	if (record) {
-    		System.out.println(".");
-    		recordings.add(event);
-    	}
+        if (!record) return;
+        if (filtered(event)) return;
+
+    	recordings.add(event);
     }
 
-    public List<JDBCStatement> getRecordedStatements() {
+    private boolean filtered(JDBCStatement stmt) {
+        if (stmt.getStatement().startsWith("select REPROCESSID, PROCESS")) return true;
+        if (stmt.getStatement().startsWith("select count(*) from REPROCESS")) return true;
+        if (stmt.getStatement().startsWith("select PROCESSINGCENTERID, VERSION from CACHEREFRESHCOUNT")) return true;
+        if (stmt.getStatement().startsWith("UPDATE LEASE SET VALIDTO")) return true;
+        if (stmt.getStatement().startsWith("update TASKRUN set SERVER")) return true;
+        if (stmt.getStatement().startsWith("insert into TASKRUN")) return true;
+        
+		return false;
+	}
+
+	public List<JDBCStatement> getRecordedStatements() {
         return recordings;
     }
     
@@ -33,7 +45,19 @@ public class SQLStatementRecorder {
     	this.record = false;
     }
     
+    public void clear() {
+        this.recordings.clear();
+    }
+
     public boolean isRecording() {
     	return this.record;
+    }
+
+    public boolean isFilterJunk() {
+    	return this.filterJunk;
+    }
+
+    public void setFilterJunk(boolean filter) {
+    	this.filterJunk = filter;
     }
 }

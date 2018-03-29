@@ -6,6 +6,7 @@
 
 <h:head>
 	<title>jdbctrace configuration</title>
+	<meta http-equiv="refresh" content="1"></meta>
 	<link rel="stylesheet"
 		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -16,7 +17,7 @@
 
 		<h:messages class="alert alert-danger" />
 		<div jsf:id="message" class="alert alert-danger"
-			rendered="#{configBean.connector.restartRequired}" role="alert">To
+			rendered="#{configBean.initializer.restartRequired}" role="alert">To
 			apply your changes, a restart of the server is required.</div>
 
 
@@ -24,10 +25,6 @@
 			href="config.xhtml">Config</a> <a class="nav-link active"
 			href="traces.xhtml">Trace</a> </nav>
 		<h:form id="form1">
-
-			<h:commandButton value="Event" class="btn btn-primary"
-				action="#{tracesBean.generateEvent}">
-			</h:commandButton>
 
 			<h:commandButton value="Start recording"
 				class="btn btn-outline-danger"
@@ -40,13 +37,20 @@
 				action="#{tracesBean.recorder.stop()}">
 			</h:commandButton>
 
+			<h:commandButton value="Clear" class="btn btn-info"
+				action="#{tracesBean.recorder.clear()}">
+			</h:commandButton>
+
+			<h:outputLabel for="filterJunk" value="Filter junk?"></h:outputLabel>
+			<h:selectBooleanCheckbox id="filterJunk" value="#{tracesBean.recorder.filterJunk}" valueChangeListener="tracesBean.updateFilterJunk"/>
+
 			<h:dataTable id="datatable"
 				value="#{tracesBean.recorder.recordedStatements}" var="entry"
 				styleClass="table">
 
 				<h:column>
 					<f:facet name="header">Entries</f:facet>    				
-                  	#{entry.query}
+                  	#{entry.resolvedStatement()}
             	</h:column>
 
 			</h:dataTable>

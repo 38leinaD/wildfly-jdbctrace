@@ -16,12 +16,12 @@
 <div class="container">
 
 	<h:messages class="alert alert-danger"/>
-	<div jsf:id="message" class="alert alert-danger" rendered="#{configBean.connector.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
+	<div jsf:id="message" class="alert alert-danger" rendered="#{configBean.initializer.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
 
 	<h:form action="#{configBean.save}">
 	<nav class="nav nav-tabs">
 		<a class="nav-link active" href="config.xhtml">Config</a>
-		<a class="nav-link" href="traces.xhtml">JDBC Trace</a>
+		<a class="nav-link" href="traces.xhtml">Trace</a>
 	</nav>
 
 		<p class="alert alert-warning" >To enable spying on the JDBC-traffic of a datasource, select a datasource below.

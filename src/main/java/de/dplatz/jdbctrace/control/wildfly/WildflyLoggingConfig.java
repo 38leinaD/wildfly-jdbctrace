@@ -50,6 +50,7 @@ class WildflyLoggingConfig {
         //findSpyLogger().orElse(this::createSpyLogger)
         if (!findSpyLogger().isPresent()) {
             this.createSpyLogger();
+            restartEvent.fire(new RestartRequired());
         }
         ObjectName spy = new ObjectName("jboss.as:subsystem=logging,logger=jboss.jdbc.spy");
         AttributeList attrs = new AttributeList();

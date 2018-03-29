@@ -29,12 +29,18 @@ public class WildflySupport {
 	public void update(JDBCDatasource ds) {
 		datasources.persist(ds);
 	}
-	
-    @Produces
-    public MBeanServerConnection getConnection() {
-    	return ManagementFactory.getPlatformMBeanServer();
-    }
     
+    @Inject
+    WildflyLoggingConfig logging;
+
+    public void enableLogging(boolean flag) {
+        try {
+			logging.setTrace(flag);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
     //--
     
     @Inject

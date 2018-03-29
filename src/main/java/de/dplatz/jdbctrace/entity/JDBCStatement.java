@@ -3,6 +3,8 @@ package de.dplatz.jdbctrace.entity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * JDBCEvent
@@ -62,31 +64,30 @@ public class JDBCStatement {
 	
 	public String resolvedStatement() {
 		String resolvedStatement = statement;
-		for (Entry<Integer, String> entry : params.entrySet()) {
-			resolvedStatement = resolveParam(resolvedStatement, entry.getKey(), entry.getValue());
+
+		int numIndices = 0;
+		for (int i=0; i<resolvedStatement.length(); i++) {
+			char c = resolvedStatement.charAt(i);
+			if (c == '?') {
+				numIndices++;
+				String param = params.get(numIndices);
+				if (param == null) continue;
+				resolvedStatement = resolvedStatement.substring(0, i) + "'" + param + "'" + resolvedStatement.substring(i+1, resolvedStatement.length());
+				i += param.length() + 2;
+			}
 		}
 				
 		return resolvedStatement;
 	}
 	
 	String resolveParam(String statement, int index, String param) {
-		int numIndices = 0;
-		for (int i=0; i<statement.length(); i++) {
-			char c = statement.charAt(i);
-			if (c == '?') {
-				numIndices++;
-				
-				if (numIndices == index) {
-					return statement.substring(0, i) + "'" + param + "'" + statement.substring(i+1, statement.length());
-				}
-			}
-		}
+
 		
 		throw new IllegalArgumentException(String.format("Index %s does not exist in '%s'", index, statement));
 	}
 	
 	public String toString() {
-		return statement;
+		return statement + "\n" + params.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n"));
 	}
 
 }

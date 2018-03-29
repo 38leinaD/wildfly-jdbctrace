@@ -40,7 +40,7 @@ public class WildflyLogParser {
     	JDBCStatement stmt = statementsPerThread.get(thread);
     	
     	if (isStatementStart(command)) {
-    		event.fire(stmt);
+			if (stmt != null) event.fire(stmt);
     		
     		stmt = new JDBCStatement();
     		stmt.setTimestamp(timestamp);
@@ -58,6 +58,9 @@ public class WildflyLogParser {
     	else if (isStatementObjectParameter(command)) {
     		extractObjectSetter(stmt, command);
 		}
+		else if (isStatementTimestampParameter(command)) {
+    		extractTimestampSetter(stmt, command);
+		}
     }
     
     void extractStatement(JDBCStatement statement, String command) {
@@ -70,7 +73,23 @@ public class WildflyLogParser {
     	int start = command.indexOf(",");
     	int end = command.lastIndexOf(",");
     	statement.setParam(Integer.parseInt(command.substring(bracket+1, start)), command.substring(start+2, end));
+	}
+	
+	    
+    void extractTimestampSetter(JDBCStatement statement, String command) {
+    	// "setObject(2, Alpha.Cluster.dev-vm, 12)"
+    	int bracket = command.indexOf("(");
+		int start = command.indexOf(",");
+		int next = start + command.substring(start+1).indexOf(",");
+    	statement.setParam(Integer.parseInt(command.substring(bracket+1, start)), command.substring(start+2, next+1));
     }
+	
+	public void extractStringSetter(JDBCStatement statement, String command) {
+    	int bracket = command.indexOf("(");
+    	int start = command.indexOf(",");
+    	int end = command.lastIndexOf(")");
+    	statement.setParam(Integer.parseInt(command.substring(bracket+1, start)), command.substring(start+2, end));
+	}
     
     boolean isStatementStart(String command) {
     	return command.startsWith("prepareStatement(");
@@ -81,7 +100,14 @@ public class WildflyLogParser {
     }
     
     boolean isStatementObjectParameter(String command) {
-    	return command.startsWith("setObject(")
-    			|| command.startsWith("setTimestamp(");
+    	return command.startsWith("setObject(");
+	}
+	
+	boolean isStatementTimestampParameter(String command) {
+    	return command.startsWith("setTimestamp(");
+    }
+
+	boolean isStatementStringParameter(String command) {
+    	return command.startsWith("setString(");
     }
 }

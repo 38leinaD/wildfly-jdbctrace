@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
+import javax.faces.component.html.HtmlSelectBooleanCheckbox;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 
 import de.dplatz.jdbctrace.control.ApplicationInitializer;
@@ -20,21 +23,14 @@ public class TracesBean implements Serializable {
     
 	@Inject
 	SQLStatementRecorder recorder;
-
    
     @Inject
     Event<JDBCStatement> event;
 
-    public String generateEvent() {
-        System.out.println("event");
-       
-        JDBCStatement stmt = new JDBCStatement();
-        stmt.setStatement("Hello World!");
-        event.fire(stmt);
-
-        return null;
+    public void updateFilterJunk(ValueChangeEvent event) {
+        recorder.setFilterJunk((boolean) event.getNewValue());
     }
-    
+
     public SQLStatementRecorder getRecorder() {
     	return recorder;
     }
