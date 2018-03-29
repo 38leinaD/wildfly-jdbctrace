@@ -6,14 +6,20 @@
 
 <h:head>
 	<title>jdbctrace configuration</title>
-	<meta http-equiv="refresh" content="1"></meta>
+	<!-- meta http-equiv="refresh" content="1"></meta-->
 	<link rel="stylesheet"
 		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 		crossorigin="anonymous"></link>
+		<style>
+			td {
+				white-space: nowrap;
+				overflow: hidden;         
+  				text-overflow: ellipsis;
+			}
+		</style>
 </h:head>
 <h:body>
-	<div class="container">
 
 		<h:messages class="alert alert-danger" />
 		<div jsf:id="message" class="alert alert-danger"
@@ -30,40 +36,71 @@
 				class="btn btn-outline-danger"
 				rendered="#{not tracesBean.recorder.recording}"
 				action="#{tracesBean.recorder.record()}">
+
+				<f:ajax execute="@this" render=":form1" />
 			</h:commandButton>
 
 			<h:commandButton value="Stop recording" class="btn btn-danger"
 				rendered="#{tracesBean.recorder.recording}"
 				action="#{tracesBean.recorder.stop()}">
+
+				<f:ajax execute="@this" render=":form1" />
 			</h:commandButton>
 
-			<h:commandButton value="Clear" class="btn btn-info"
+			<!-- h:commandButton value="Clear" class="btn btn-info"
 				action="#{tracesBean.recorder.clear()}">
 			</h:commandButton>
-			
-			<h:commandButton value="Generate Events" class="btn btn-info"
-				action="#{configBean.initializer.plugin.generateTestData()}">
-			</h:commandButton>
+
 
 			<h:outputLabel for="filterJunk" value="Filter junk?"></h:outputLabel>
-			<h:selectBooleanCheckbox id="filterJunk" value="#{tracesBean.recorder.filterJunk}" valueChangeListener="tracesBean.updateFilterJunk"/>
-
-			<h:dataTable id="datatable"
-				value="#{tracesBean.recorder.recordedStatements}" var="entry"
-				styleClass="table">
-
-				<h:column>
-					<f:facet name="header">Entries</f:facet>    				
-                  	#{entry.resolvedStatement()}
-            	</h:column>
-
-			</h:dataTable>
+			<h:selectBooleanCheckbox id="filterJunk"
+				value="#{tracesBean.recorder.filterJunk}"
+				valueChangeListener="tracesBean.updateFilterJunk" /-->
 
 		</h:form>
 
-	</div>
-	<script>
+		<br/>
 
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+			  <span class="input-group-text" id="basic-addon1">Filter</span>
+			</div>
+			<input type="text" id="filterText" class="form-control" value="REPROCESS|CACHEREFRESHCOUNT|LEASE|TASKRUN"></input>
+		  </div>
+
+		<table class="table table-striped" id="jdbcevents">
+			<thead>
+				<tr>
+					<th scope="col" width="*">Thread</th>
+					<th scope="col" width="90%">SQL</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+
+	<script>
+		function onEvent(event) {
+			let sqlEvent = JSON.parse(event.data);
+
+			let filters = document.querySelector("#filterText").value.split("|");
+
+			for (let filter in filters) {
+				if (sqlEvent.sql.indexOf(filter) != -1) return;
+			}
+
+			let jdbceventsTable = document.querySelector("#jdbcevents");
+			let row = jdbceventsTable.insertRow(-1);
+			let threadCell = row.insertCell(0);
+		    let sqlCell = row.insertCell(1);		
+
+		    threadCell.innerText = sqlEvent.thread;
+		    sqlCell.innerText = sqlEvent.sql;
+		}
+		const sseSource = new EventSource("/jdbctrace/events");
+		sseSource.onopen = e => console.log(e);
+		sseSource.onmessage = onEvent;		
+				
     </script>
 </h:body>
 

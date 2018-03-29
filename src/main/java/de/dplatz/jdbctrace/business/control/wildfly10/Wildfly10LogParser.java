@@ -14,7 +14,7 @@ public class Wildfly10LogParser {
 
     Map<String, JDBCStatement> statementsPerThread = new HashMap<>();
 
-    Pattern pattern = Pattern.compile("^(.*)\\sDEBUG\\s\\[(.+)\\]\\s\\((.+)\\)\\s(.+)\\s\\[.+\\]\\s(.+)$");
+    Pattern pattern = Pattern.compile("^(.*)\\s[A-Z]+\\s\\[(.+)\\]\\s\\((.+)\\)\\s(.+)\\s\\[.+\\]\\s(.+)$");
     
     @Inject
     Event<JDBCStatement> event;
@@ -65,7 +65,6 @@ public class Wildfly10LogParser {
     }
     
     void extractObjectSetter(JDBCStatement statement, String command) {
-    	// "setObject(2, Alpha.Cluster.dev-vm, 12)"
     	int bracket = command.indexOf("(");
     	int start = command.indexOf(",");
     	int end = command.lastIndexOf(",");
@@ -74,7 +73,6 @@ public class Wildfly10LogParser {
 	
 	    
     void extractTimestampSetter(JDBCStatement statement, String command) {
-    	// "setObject(2, Alpha.Cluster.dev-vm, 12)"
     	int bracket = command.indexOf("(");
 		int start = command.indexOf(",");
 		int next = start + command.substring(start+1).indexOf(",");
