@@ -1,106 +1,107 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
 
 <h:head>
-	<title>jdbctrace configuration</title>
-	<!-- meta http-equiv="refresh" content="1"></meta-->
-	<link rel="stylesheet"
-		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-		crossorigin="anonymous"></link>
-		<style>
-			td {
-				white-space: nowrap;
-				overflow: hidden;         
-  				text-overflow: ellipsis;
-			}
-		</style>
+    <title>jdbctrace configuration</title>
+    <!-- meta http-equiv="refresh" content="1"></meta-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+     crossorigin="anonymous"></link>
+    <link rel="stylesheet" href="style.css"></link>
+    <style>
+        table {
+            table-layout: fixed;
+        }
+        td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
 </h:head>
 <h:body>
 
-		<h:messages class="alert alert-danger" />
-		<div jsf:id="message" class="alert alert-danger"
-			rendered="#{configBean.initializer.restartRequired}" role="alert">To
-			apply your changes, a restart of the server is required.</div>
+    <h:messages class="alert alert-danger" />
+    <div jsf:id="message" class="alert alert-danger" rendered="#{configBean.initializer.restartRequired}" role="alert">To apply your changes, a restart of the server is required.</div>
 
 
-		<nav class="nav nav-tabs"> <a class="nav-link"
-			href="config.xhtml">Config</a> <a class="nav-link active"
-			href="traces.xhtml">Trace</a> </nav>
-		<h:form id="form1">
+    <nav class="nav nav-tabs">
+        <a class="nav-link" href="config.xhtml">Config</a>
+        <a class="nav-link active" href="traces.xhtml">Trace</a>
+    </nav>
+    <h:form id="form1">
 
-			<h:commandButton value="Start recording"
-				class="btn btn-outline-danger"
-				rendered="#{not tracesBean.recorder.recording}"
-				action="#{tracesBean.recorder.record()}">
+        <h:commandButton value="Start recording" style="width: 100%" class="btn btn-success" rendered="#{not tracesBean.clientSessionManager.recording}"
+         action="#{tracesBean.clientSessionManager.record()}">
 
-				<f:ajax execute="@this" render=":form1" />
-			</h:commandButton>
+            <f:ajax execute="@this" render=":form1" />
+        </h:commandButton>
 
-			<h:commandButton value="Stop recording" class="btn btn-danger"
-				rendered="#{tracesBean.recorder.recording}"
-				action="#{tracesBean.recorder.stop()}">
+        <h:commandButton value="Stop recording" class="btn btn-danger" style="width: 100%" rendered="#{tracesBean.clientSessionManager.recording}"
+         action="#{tracesBean.clientSessionManager.stop()}">
 
-				<f:ajax execute="@this" render=":form1" />
-			</h:commandButton>
+            <f:ajax execute="@this" render="@form" />
+        </h:commandButton>
 
-			<!-- h:commandButton value="Clear" class="btn btn-info"
-				action="#{tracesBean.recorder.clear()}">
-			</h:commandButton>
+    </h:form>
 
+    <br/>
 
-			<h:outputLabel for="filterJunk" value="Filter junk?"></h:outputLabel>
-			<h:selectBooleanCheckbox id="filterJunk"
-				value="#{tracesBean.recorder.filterJunk}"
-				valueChangeListener="tracesBean.updateFilterJunk" /-->
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">Filter</span>
+        </div>
+        <input type="text" title="Provide a regex for things to be filtered out." id="filterText" class="form-control" value=""></input>
+    </div>
 
-		</h:form>
+    <table class="table table-striped" id="jdbcevents">
+        <thead>
+            <tr>
+                <th scope="col" width="*">Thread</th>
+                <th scope="col" width="90%">SQL</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
-		<br/>
+    <script type="text/javascript">
+    //<![CDATA[
 
-		<div class="input-group mb-3">
-			<div class="input-group-prepend">
-			  <span class="input-group-text" id="basic-addon1">Filter</span>
-			</div>
-			<input type="text" id="filterText" class="form-control" value="REPROCESS|CACHEREFRESHCOUNT|LEASE|TASKRUN"></input>
-		  </div>
+        const filterText = document.querySelector("#filterText");
+        filterText.onblur = onFilterTextChanged;
 
-		<table class="table table-striped" id="jdbcevents">
-			<thead>
-				<tr>
-					<th scope="col" width="*">Thread</th>
-					<th scope="col" width="90%">SQL</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
+        if (!localStorage.getItem("filter")) {
+            filterText.value = "(^SELECT)|REPROCESS|CACHEREFRESHCOUNT|LEASE|TASKRUN";
+        }
+        else {
+            filterText.value = localStorage.getItem("filter");
+        }
 
-	<script>
-		function onEvent(event) {
-			let sqlEvent = JSON.parse(event.data);
+        function onFilterTextChanged(event) {
+            localStorage.setItem("filter", event.target.value);
+        }
 
-			let filters = document.querySelector("#filterText").value.split("|");
+        function onEvent(event) {
+            let sqlEvent = JSON.parse(event.data);
 
-			for (let filter in filters) {
-				if (sqlEvent.sql.indexOf(filter) != -1) return;
-			}
+            let filters = filterText.value;
+            console.log("JDBCStatement: " + sqlEvent.sql);
+            
+            if (new RegExp(filters, "i").test(sqlEvent.sql)) return;
 
-			let jdbceventsTable = document.querySelector("#jdbcevents");
-			let row = jdbceventsTable.insertRow(-1);
-			let threadCell = row.insertCell(0);
-		    let sqlCell = row.insertCell(1);		
+            let jdbceventsTable = document.querySelector("#jdbcevents");
+            let row = jdbceventsTable.insertRow(-1);
+            let threadCell = row.insertCell(0);
+            let sqlCell = row.insertCell(1);
 
-		    threadCell.innerText = sqlEvent.thread;
-		    sqlCell.innerText = sqlEvent.sql;
-		}
-		const sseSource = new EventSource("/jdbctrace/events");
-		sseSource.onopen = e => console.log(e);
-		sseSource.onmessage = onEvent;		
-				
+            threadCell.innerText = sqlEvent.thread;
+            sqlCell.innerText = sqlEvent.sql;
+        }
+        const clientId = Math.floor(Math.random() * 100000000);
+        const sseSource = new EventSource("/jdbctrace/events?clientId=" + clientId);
+        sseSource.onopen = e => console.log(e);
+        sseSource.onmessage = onEvent;
+    //]]>
     </script>
 </h:body>
 

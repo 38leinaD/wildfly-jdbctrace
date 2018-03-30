@@ -36,42 +36,27 @@ public class Wildfly10Plugin implements AppServerPlugin {
     
     Tailer tail;
     
-    /* (non-Javadoc)
-	 * @see de.dplatz.jdbctrace.business.control.wildfly10.AppServerPlugin#isEligible()
-	 */
     @Override
 	public boolean isEligible() {
     	String logPath = System.getProperty("jboss.server.log.dir");
     	return logPath != null;
     }
     
-	/* (non-Javadoc)
-	 * @see de.dplatz.jdbctrace.business.control.wildfly10.AppServerPlugin#findAllDatasources()
-	 */
 	@Override
 	public List<JDBCDatasource> findAllDatasources() {
 		return datasources.findAll();
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.dplatz.jdbctrace.business.control.wildfly10.AppServerPlugin#updateDatasource(de.dplatz.jdbctrace.business.entity.JDBCDatasource)
-	 */
 	@Override
 	public void updateDatasource(JDBCDatasource ds) {
 		datasources.persist(ds);
 	}
     
-    /* (non-Javadoc)
-	 * @see de.dplatz.jdbctrace.business.control.wildfly10.AppServerPlugin#generateTestData()
-	 */
     @Override
 	public void generateTestData() {
     	tester.generateTestData();
     }
     
-    /* (non-Javadoc)
-	 * @see de.dplatz.jdbctrace.business.control.wildfly10.AppServerPlugin#enableLogging(boolean)
-	 */
     @Override
 	public void enableLogging(boolean flag) {
         try {
@@ -81,9 +66,6 @@ public class Wildfly10Plugin implements AppServerPlugin {
 		}
     }
 
-    /* (non-Javadoc)
-	 * @see de.dplatz.jdbctrace.business.control.wildfly10.AppServerPlugin#startup()
-	 */
     @Override
 	public void startup() {
         System.out.println("++ Reading " + serverLog.getAbsolutePath());
@@ -97,9 +79,6 @@ public class Wildfly10Plugin implements AppServerPlugin {
         executor.execute(tail);
     }
 
-    /* (non-Javadoc)
-	 * @see de.dplatz.jdbctrace.business.control.wildfly10.AppServerPlugin#teardown()
-	 */
     @Override
 	public void teardown() {
         System.out.println("++ Shutting down...");

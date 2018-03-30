@@ -21,7 +21,6 @@ public class ConfigBean implements Serializable {
 	@Inject
 	AppServerPlugin serverSupport;
 	
-	
 	List<JDBCDatasource> datasources;
 	
 	public List<JDBCDatasource> getDatasources() {

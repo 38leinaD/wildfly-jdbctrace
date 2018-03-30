@@ -2,14 +2,11 @@ package de.dplatz.jdbctrace.presentation;
 
 import java.io.Serializable;
 
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
-import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 
-import de.dplatz.jdbctrace.business.control.JDBCStatementRecorder;
+import de.dplatz.jdbctrace.business.control.ClientSessionManager;
 import de.dplatz.jdbctrace.business.control.JDBCTraceApplication;
-import de.dplatz.jdbctrace.business.entity.JDBCStatement;
 
 @Model
 public class TracesBean implements Serializable {
@@ -20,16 +17,9 @@ public class TracesBean implements Serializable {
 	JDBCTraceApplication logs;
     
 	@Inject
-	JDBCStatementRecorder recorder;
-   
-    @Inject
-    Event<JDBCStatement> event;
+	ClientSessionManager clientSessionManager;
 
-    public void updateFilterJunk(ValueChangeEvent event) {
-        recorder.setFilterJunk((boolean) event.getNewValue());
-    }
-
-    public JDBCStatementRecorder getRecorder() {
-    	return recorder;
+    public ClientSessionManager getClientSessionManager() {
+    	return clientSessionManager;
     }
 }
